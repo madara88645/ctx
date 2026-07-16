@@ -94,6 +94,40 @@ with a human orchestrator who reviewed and verified but never typed the product 
 cockpit that made that delegation watchable enough to trust. `ctx` is the proof, not the
 prize.
 
+## And agents use it, too
+
+The tool was built by delegated agents — so we checked whether agents can also *use* it. We gave
+a fresh Claude agent exactly one thing: the copy-paste [rules snippet](./agent-usage.md) (as it
+would live in a project's `AGENTS.md`) and a project it had never seen. The only instruction from
+the "user" was **"pick up where we left off and continue the work"** — zero task content.
+
+Following the snippet, the agent ran `ctx resume` first, and that note — left by a previous
+session — was its *only* source of the task:
+
+```
+Note: calc parser: handles + only; NEXT: add support for the - (minus) operator in parseExpr()
+```
+
+It found `parseExpr()`, added subtraction support, verified it against six cases, then wrote its
+own handoff for the next session (`ctx save "… added - support … NEXT: add * and / …"`). Its
+honest verdict:
+
+> "ctx meaningfully handed off context — without it I had nothing to go on but 'continue the
+> work,' and the resume note gave me the exact function, the exact missing feature, and the exact
+> next step."
+
+Two honest edges it raised, kept here because pretending a demo was flawless helps no one:
+
+- **The handoff is only as good as the note.** `save` takes free text; a vague note hands off
+  nothing. The [agent protocol](./agent-usage.md) exists precisely to push agents toward concrete
+  "state + next step" notes.
+- It also saw `ctx list` come back empty — a sandbox artifact (the demo redirects the store with
+  `CTX_HOME`, and that variable wasn't set in the one shell where it ran `list`), not a `ctx` bug;
+  `list` works normally against the default store.
+
+The protocol, the snippet, and a ready-to-install Claude Code skill are in
+[docs/agent-usage.md](./agent-usage.md).
+
 ## Reproduce it
 
 1. Install the cockpit: `npx agy-understudy`
