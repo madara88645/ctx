@@ -1,61 +1,106 @@
-# ctx — Context Snapshot & Resume CLI
+# ctx
 
-**ctx** is a zero-dependency command-line utility designed to help you quickly save your current coding state ("where was I") and seamlessly reconstruct it when returning to a project. It tracks files modified, added, or removed, and records best-effort git context alongside a developer note, making context switching lightweight and frictionless.
+> A zero-dependency **"where was I"** CLI: snapshot your working directory, then pick up exactly where you left off — files changed, time away, your note, and git context.
+
+[![npm](https://img.shields.io/npm/v/@madara88645/ctx)](https://www.npmjs.com/package/@madara88645/ctx)
+[![CI](https://github.com/madara88645/ctx/actions/workflows/ci.yml/badge.svg)](https://github.com/madara88645/ctx/actions/workflows/ci.yml)
+[![license](https://img.shields.io/npm/l/@madara88645/ctx)](./LICENSE)
+[![node](https://img.shields.io/node/v/@madara88645/ctx)](https://nodejs.org)
+
+**I never wrote a line of this tool's code.** An AI picked the idea, cheap delegated
+[Google Antigravity](https://antigravity.google) (Gemini) agents wrote every module and every
+test across eight bounded slices, and I orchestrated and verified the build while watching it
+live through [Understudy](https://github.com/madara88645/agy-understudy). `ctx` is the working
+proof of that method — the full story is in **[docs/making-of.md](./docs/making-of.md)**.
+
+## What it does
+
+You're deep in a project, you context-switch, and days later you're back staring at it going
+"…where was I?" `ctx` answers that:
+
+- **`ctx save "<note>"`** stamps the moment — a fingerprint of every file in the directory
+  (size + mtime), the current git branch/status, and your note.
+- **`ctx resume`** tells you how long you were gone, replays your note, and lists exactly what
+  changed since — added, modified, removed.
+- **`ctx list`** shows every project you've stamped, most recent first.
+
+No daemon, no network, no telemetry, **zero dependencies.** Everything lives in a single JSON
+file at `~/.ctx/store.json`.
 
 ## Requirements
-- **Node.js**: version `20` or higher is required.
-- **Dependencies**: Zero runtime dependencies.
 
-## Installation & Usage
+- Node.js **≥ 20**
+- Zero runtime dependencies
 
-You can run `ctx` directly without installation by invoking it with Node:
+## Install & use
+
+Run it without installing anything:
+
 ```bash
-node bin/ctx.mjs save "your developer note"
-node bin/ctx.mjs resume
-node bin/ctx.mjs list
+npx @madara88645/ctx save "fixing the login redirect"
+npx @madara88645/ctx resume
+npx @madara88645/ctx list
 ```
 
-Alternatively, you can link it globally using `npm link` so it is available globally under `ctx`:
-```bash
-npm link
-# Now you can run it directly:
-ctx save "your developer note"
-```
+Or install it globally for a bare `ctx`:
 
-## Commands & Examples
+```bash
+npm install -g @madara88645/ctx
+ctx save "fixing the login redirect"
+```
 
 ### `ctx save <note>`
-Saves a snapshot of the current working directory under the specified note.
-```bash
-$ ctx save "fixing login screen authentication bug"
-Saved snapshot for /Users/developer/project-alpha (14 files tracked).
+
+```
+$ ctx save "fixing the login redirect"
+Saved snapshot for /Users/you/project-alpha (142 files tracked).
 ```
 
 ### `ctx resume`
-Compares the current directory footprint with the last saved snapshot, listing added, modified, and removed files since that snapshot, and displaying the saved note.
-```bash
+
+```
 $ ctx resume
-Resume brief for /Users/developer/project-alpha
-Last save: 10 minutes ago
-Note: fixing login screen authentication bug
+Resume brief for /Users/you/project-alpha
+Last save: 3 days ago
+Note: fixing the login redirect
 Git then: main
-Added (1): src/components/LoginButton.js
-Modified (2): src/App.js, src/utils/auth.js
+Added (1): src/auth/redirect.js
+Modified (2): src/App.js, src/routes.js
 ```
 
 ### `ctx list`
-Lists all tracked projects with saved snapshots, sorted by the most recent save.
-```bash
+
+```
 $ ctx list
-10 minutes ago  /Users/developer/project-alpha  —  fixing login screen authentication bug
-2 hours ago    /Users/developer/project-beta   —  refactored database query helper
+3 days ago   /Users/you/project-alpha  —  fixing the login redirect
+1 week ago   /Users/you/project-beta   —  refactor the query builder
 ```
 
-## CTX_HOME Override
-By default, the store is saved in your user home directory. You can override the directory where snapshots are stored by setting the `CTX_HOME` environment variable:
+## `CTX_HOME`
+
+By default the store lives at `~/.ctx/store.json`. Override the directory with `CTX_HOME`:
+
 ```bash
-export CTX_HOME="/path/to/custom/dir"
+export CTX_HOME="/path/to/store-dir"
 ```
 
-## How it Works
-`ctx` is designed to be extremely lightweight and secure. It saves all state as a single JSON store at `~/.ctx/store.json` (or under `CTX_HOME` if set). It builds project footprints using file size and modification time (`mtime`) fingerprints, completely skipping ignored directories such as `node_modules` and `.git`. It resolves best-effort git repository status using standard git subprocess calls. There are no running background daemons, and `ctx` never makes network requests, keeping your data entirely local.
+## How it works
+
+`ctx` builds a *footprint* of a directory from each file's size and modification time, skipping
+noisy directories (`node_modules`, `.git`, `dist`, `build`, `__pycache__`) and `.DS_Store`.
+`resume` re-fingerprints the directory and diffs it against the saved snapshot. Git context is
+best-effort: if `git` is present it records the branch and short status, and if anything fails
+it simply records nothing. All state is one pretty-printed JSON file; there is no background
+process and no network access, ever.
+
+## How it was built
+
+Every line of product code was written by delegated Gemini agents, one bounded slice at a
+time, orchestrated and verified by a human-driven frontier model and watched live through the
+[Understudy](https://github.com/madara88645/agy-understudy) cockpit. The recovery run, the
+Node-version footgun a cheap agent debugged on its own, and the slice-by-slice evidence are all
+in **[docs/making-of.md](./docs/making-of.md)**.
+
+## License
+
+[MIT](./LICENSE) © Mehmet Özel
