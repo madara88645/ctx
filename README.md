@@ -101,6 +101,16 @@ time, orchestrated and verified by a human-driven frontier model and watched liv
 Node-version footgun a cheap agent debugged on its own, and the slice-by-slice evidence are all
 in **[docs/making-of.md](./docs/making-of.md)**.
 
+## Roadmap
+
+`ctx` v0.1 is intentionally the exact tool the delegated agents produced. A few conveniences
+are planned for v0.2 — and, to keep the experiment honest, they will be built the same way, by
+a delegated agent watched through Understudy:
+
+- `--version` / `-v` and `--help` / `-h` flags
+- `.gitignore`-aware snapshots — skip whatever your project already ignores, on top of the
+  built-in `node_modules` / `.git` / `dist` / `build` / `__pycache__` skips
+
 ## License
 
 [MIT](./LICENSE) © Mehmet Özel
