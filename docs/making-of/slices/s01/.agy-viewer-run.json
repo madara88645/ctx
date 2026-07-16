@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "status": "completed",
+  "sandboxPath": "~/agy-sandbox/ctx-cli",
+  "prompt": "This is a fresh, explicitly authorized recovery run in:\n~/agy-sandbox/ctx-cli\n\nImplement the requested change now. This is a non-interactive run: do NOT ask for\nconfirmation, do NOT stop at a design proposal, do NOT wait for approval.\n\nA previous run of Slice S1 was killed by a watchdog after a service timeout. It already\ncreated these files, which are CORRECT and must be preserved unchanged:\n- package.json, README.md, test/cli-help.test.mjs (and plan.md, prompt.md are read-only context)\n\nFix only the stated acceptance failure: ~/agy-sandbox/ctx-cli/bin/ctx.mjs\nis missing, so the test suite cannot pass.\n\nYou MUST create exactly one file:\n- ~/agy-sandbox/ctx-cli/bin/ctx.mjs — argv dispatcher. Behavior:\n  * no args or \"help\" → print a help text (multi-line) to stdout that contains these three\n    literal lines, then exit 0:\n      ctx save <note>\n      ctx resume\n      ctx list\n  * any other command → print the same help to stdout and exit with code 1\n    (use process.exitCode = 1 or process.exit(1) AFTER printing).\n\nDo not modify any other file. Do not broaden scope: do NOT implement save/resume/list yet.\nDo not use the network, do not install packages (Node.js built-ins only), do not use git.\n\nAcceptance checks:\n1. bin/ctx.mjs exists with the behavior above.\n2. `node --test test/` passes (both existing tests green).\n\nRun only this validation command: cd ~/agy-sandbox/ctx-cli && node --test test/\nAt the end, state changed files, validation output, and any remaining limitation.\n",
+  "startedAt": "2026-07-15T09:28:55Z",
+  "pid": 62076,
+  "pgid": 62076,
+  "mode": "accept-edits",
+  "agent": "Gemini 3.5 Flash (High)",
+  "endedAt": "2026-07-15T09:30:14Z",
+  "exitCode": 0
+}

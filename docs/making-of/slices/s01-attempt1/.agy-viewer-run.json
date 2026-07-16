@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "status": "stalled",
+  "sandboxPath": "~/agy-sandbox/ctx-cli",
+  "prompt": "You are working only in this sandbox: ~/agy-sandbox/ctx-cli\n\nImplement the requested change now. This is a non-interactive run: do NOT ask for\nconfirmation, do NOT stop at a design proposal, do NOT wait for approval.\n\nFirst read ~/agy-sandbox/ctx-cli/plan.md for full context (read-only).\nThen implement ONLY Slice S1 (Scaffold + help contract). Do not implement any other slice.\n\nGoal: scaffold the zero-dependency \"ctx\" CLI and its help contract.\n\nYou MUST create exactly these files:\n- ~/agy-sandbox/ctx-cli/package.json — name \"ctx-cli\", \"type\":\"module\",\n  \"bin\":{\"ctx\":\"bin/ctx.mjs\"}, \"scripts\":{\"test\":\"node --test test/\"}, engines node >=20.\n  NO dependencies and NO devDependencies keys with content.\n- ~/agy-sandbox/ctx-cli/bin/ctx.mjs — argv dispatcher. For now: no args or\n  \"help\" → print a help text (multi-line) that contains these three literal lines and exit 0:\n    ctx save <note>\n    ctx resume\n    ctx list\n  Any unknown command → print the same help to stdout and exit with code 1.\n- ~/agy-sandbox/ctx-cli/README.md — short stub: what ctx is (context\n  snapshot & resume CLI), Node >= 20, zero dependencies, \"full docs coming in later slices\".\n- ~/agy-sandbox/ctx-cli/test/cli-help.test.mjs — node:test suite using\n  child_process.spawnSync(process.execPath, [<absolute path to bin/ctx.mjs resolved from\n  the test file's URL>], ...): (a) no args → exit 0 and stdout contains \"ctx save <note>\";\n  (b) arg \"bogus\" → exit status 1.\n\nDo not touch any other file. Locked read-only: plan.md, prompt.md.\nDo not use the network, do not install packages (Node.js built-ins only), do not use git.\n\nAcceptance checks:\n1. The four files above exist with the described behavior.\n2. `node --test test/` passes (2 tests green).\n\nRun only this validation command: cd ~/agy-sandbox/ctx-cli && node --test test/\nAt the end, state changed files, validation output, and any remaining limitation.\n",
+  "startedAt": "2026-07-15T09:25:26Z",
+  "pid": 60764,
+  "pgid": 60764,
+  "mode": "accept-edits",
+  "agent": "Gemini 3.5 Flash (High)",
+  "endedAt": "2026-07-15T09:27:22Z",
+  "exitCode": 1,
+  "termination": "stall-90s-no-output"
+}

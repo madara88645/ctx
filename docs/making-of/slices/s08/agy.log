@@ -1,0 +1,50 @@
+I am starting by reviewing the `using-superpowers` skill instructions to ensure I follow the correct procedure.
+I will read the `writing-plans` skill to guide the formulation of the implementation steps for Slice S8.
+I will now read `plan.md` to understand the context and the specification of Slice S8.
+I will list the directory contents of the workspace to see the existing files.
+I will view the contents of the CLI entry point file `bin/ctx.mjs`.
+I will view `test/cli-help.test.mjs` to understand the existing CLI help test suite.
+I will run the existing test suite to ensure everything is green before we start modifying.
+I will view `src/commands.mjs` to see the signatures of `cmdSave`, `cmdResume`, and `cmdList`.
+I will read the current `README.md` to see its contents.
+I will view the `package.json` file.
+I will modify `bin/ctx.mjs` to import and dispatch commands based on the arguments.
+I will run the tests to verify the help behavior still works perfectly.
+I will search the `test/` directory for temp directory creation patterns.
+I will view lines 1 to 50 of `test/commands.test.mjs` to check the setup, cleanup, and env patterns.
+I will create the file `test/cli-e2e.test.mjs` with the end-to-end tests as described.
+I will run the test suite to verify the end-to-end behavior of the CLI and all unit tests.
+I will overwrite the stub in `README.md` with the full documentation.
+I will run the full test suite one more time to verify everything works flawlessly.
+I have implemented Slice S8 (wire CLI + e2e + README) as requested.
+
+### Changed Files
+- **Modified**: [bin/ctx.mjs](file://~/agy-sandbox/ctx-cli/bin/ctx.mjs) (wired `cmdSave`, `cmdResume`, and `cmdList` commands to CLI args, setting exit code based on output status, maintaining existing help exit code behavior).
+- **Created**: [test/cli-e2e.test.mjs](file://~/agy-sandbox/ctx-cli/test/cli-e2e.test.mjs) (end-to-end tests covering `save`, `resume`, and `list` commands verifying outputs, status codes, and environment overrides with temporary directories).
+- **Modified**: [README.md](file://~/agy-sandbox/ctx-cli/README.md) (re-documented the project context, requirements, install-free invocation, realistic command output examples, `CTX_HOME` configuration, and under-the-hood details).
+
+### Validation Output
+Running the validation command:
+```bash
+cd ~/agy-sandbox/ctx-cli && node --test
+```
+
+All 41 tests passed successfully:
+```
+✔ CLI End-to-End Workflow (111.754833ms)
+✔ CLI Help - no args exits 0 and contains ctx save <note> (26.549042ms)
+✔ CLI Help - bogus command exits 1 and contains help (23.176792ms)
+...
+✔ formatRelative - absolute UTC date padding test (0.075125ms)
+ℹ tests 41
+ℹ suites 0
+ℹ pass 41
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 506.645625
+```
+
+### Remaining Limitations
+- None. The feature is complete, modular, and fully tested.
