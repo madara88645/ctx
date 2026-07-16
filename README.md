@@ -95,6 +95,26 @@ best-effort: if `git` is present it records the branch and short status, and if 
 it simply records nothing. All state is one pretty-printed JSON file; there is no background
 process and no network access, ever.
 
+## For AI agents
+
+You probably won't type these commands — your agent will. `ctx` is a plain CLI with stable
+output, so any coding agent (Claude Code, Cursor, Cline, Copilot, …) can drive it with no
+plugin. It gives an agent a durable, one-line handoff between sessions: `ctx resume` at the
+start reloads "where we were", and `ctx save "<state + next step>"` at a stopping point writes
+that handoff for the next run — agent or human.
+
+Drop this into your agent's rules file (`AGENTS.md` / `CLAUDE.md` / `.cursorrules` / `.clinerules`):
+
+```md
+## ctx — where-was-I memory
+When you start work in this project, run `ctx resume` first and use its note + changed-files
+list to orient. At a stopping point (task done, pausing, or before the context window compacts),
+run `ctx save "<what you just did + the next step>"` so the next session can pick up. Save at
+checkpoints, not after every edit. If `ctx` isn't installed, skip this.
+```
+
+Full protocol and a ready-to-install Claude Code skill: **[docs/agent-usage.md](./docs/agent-usage.md)**.
+
 ## How it was built
 
 Every line of product code was written by delegated Gemini agents, one bounded slice at a
