@@ -1,14 +1,43 @@
 {
-  "name": "ctx-cli",
-  "version": "1.0.0",
+  "name": "@madara88645/ctx",
+  "version": "0.1.0",
+  "description": "ctx — a zero-dependency \"where was I\" CLI: snapshot your working directory and resume it later (files changed, time away, your note, and best-effort git context).",
+  "keywords": [
+    "cli",
+    "context",
+    "snapshot",
+    "resume",
+    "where-was-i",
+    "context-switching",
+    "productivity",
+    "developer-tools",
+    "git",
+    "zero-dependency"
+  ],
+  "license": "MIT",
+  "author": "Mehmet Özel (https://github.com/madara88645)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/madara88645/ctx.git"
+  },
+  "homepage": "https://github.com/madara88645/ctx#readme",
+  "bugs": {
+    "url": "https://github.com/madara88645/ctx/issues"
+  },
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "bin": {
     "ctx": "bin/ctx.mjs"
   },
+  "files": [
+    "bin",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "test": "node --test"
-  },
-  "engines": {
-    "node": ">=20"
   }
 }
