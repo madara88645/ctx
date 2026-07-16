@@ -7,6 +7,8 @@
 [![license](https://img.shields.io/npm/l/@madara88645/ctx)](./LICENSE)
 [![node](https://img.shields.io/node/v/@madara88645/ctx)](https://nodejs.org)
 
+![ctx — stamp where you are, then resume exactly where you left off](https://raw.githubusercontent.com/madara88645/ctx/main/docs/demo.gif)
+
 **I never wrote a line of this tool's code.** An AI picked the idea, cheap delegated
 [Google Antigravity](https://antigravity.google) (Gemini) agents wrote every module and every
 test across eight bounded slices, and I orchestrated and verified the build while watching it
