@@ -1,0 +1,82 @@
+I will view the skill instructions for `using-superpowers` first to understand the mandatory workflow when starting a conversation.
+I will view the skill instructions for `brainstorming` to explore user requirements, design constraints, and intent before starting implementation.
+I will read the plan.md file as requested by the user to understand the Slice S7 contract and the store schema.
+I will list the files in the directory to confirm the environment structure.
+I will list files inside `src` to see existing modules.
+I will list the files in the `test` directory to understand existing test modules.
+I will view the contents of the existing source files in `src/` to ensure correct integration.
+I will view the fingerprint.mjs file to inspect the exports snapshotDir and diffSnapshots.
+I will view the store.mjs file to inspect loadStore, saveStore, and storePath.
+I will view git.mjs to see the signature and behavior of gitInfo.
+I will view timefmt.test.mjs to see the testing conventions.
+I will execute the current test suite to ensure everything is starting from a clean, green state.
+I will view `test/store.test.mjs` to check how the temp `CTX_HOME` setup is done.
+I will write the implementation of `src/commands.mjs` containing the three command composers (`cmdSave`, `cmdResume`, and `cmdList`).
+I will write the implementation of `src/commands.mjs` without `ArtifactMetadata` as it is not a conversation artifact.
+I will write `test/commands.test.mjs` with comprehensive test coverage based on the exact specifications and rules.
+I will run the test suite to verify if all the existing tests and the new commands tests are passing.
+I will view the skill instructions for `verification-before-completion` to ensure we meet all completion and verification requirements.
+### Changed Files
+- Created [src/commands.mjs](file:///Users/mehmetozel/agy-sandbox/ctx-cli/src/commands.mjs)
+- Created [test/commands.test.mjs](file:///Users/mehmetozel/agy-sandbox/ctx-cli/test/commands.test.mjs)
+
+---
+
+### Validation Output
+The tests were executed by running `cd /Users/mehmetozel/agy-sandbox/ctx-cli && node --test`. All 40 tests passed:
+
+```
+✔ CLI Help - no args exits 0 and contains ctx save <note> (23.233917ms)
+✔ CLI Help - bogus command exits 1 and contains help (20.356625ms)
+✔ cmdSave with empty noteWords -> ok false, exact usage text, and loadStore() still empty (1.823292ms)
+✔ cmdSave with ["fix","auth","bug"] -> ok true, text matches, store entry matches (11.913ms)
+✔ note truncation: 600-char note saved as 500 chars (8.296458ms)
+✔ cmdResume with no entry -> exact "No snapshot..." text (1.147708ms)
+✔ cmdResume after save with no changes -> contains "Last save: just now" and "No file changes since then." (7.877083ms)
+✔ cmdResume after adding one file and modifying one -> contains Added (1) and Modified (1) lines (8.29975ms)
+✔ 21+ added files -> the Added line ends with , … (10.599458ms)
+✔ cmdList empty -> exact text; after two saves in two dirs -> two lines, most recent first (16.057167ms)
+✔ cmdList 70-char note -> 60 chars + … (10.076458ms)
+✔ fingerprint - snapshotDir walks files and filters ignores (3.099334ms)
+✔ fingerprint - empty temp dir (0.277667ms)
+✔ fingerprint - skip symbolic links entirely (0.6865ms)
+✔ fingerprint - truncate at 5000 files (417.358792ms)
+✔ fingerprint - diffSnapshots empty -> some (0.167917ms)
+✔ fingerprint - diffSnapshots some -> empty (0.056916ms)
+✔ fingerprint - diffSnapshots modified (0.057042ms)
+✔ fingerprint - diffSnapshots mixed case with >= 2 entries per category (0.053542ms)
+✔ fingerprint - diffSnapshots null and undefined (0.057083ms)
+✔ gitInfo - typeof gitInfo is function (0.403125ms)
+✔ gitInfo - on a fresh temp dir (not a git repo) returns null (14.391209ms)
+✔ gitInfo - on a path that does not exist returns null (1.671917ms)
+✔ gitInfo - returns without throwing when given "/" (6.885625ms)
+✔ storePath - matches CTX_HOME/store.json when CTX_HOME is set (0.748125ms)
+✔ storePath - falls back to homedir/.ctx/store.json when CTX_HOME is not set (0.107791ms)
+✔ loadStore - with no file returns default structure (1.052334ms)
+✔ saveStore - saves data correctly and loadStore retrieves it (0.624625ms)
+✔ loadStore - with corrupt JSON returns default structure (0.69625ms)
+✔ loadStore - with non-object JSON returns default structure (0.699167ms)
+✔ formatRelative - just now (30s and 0s) (0.414167ms)
+✔ formatRelative - negative delta (future) (0.064667ms)
+✔ formatRelative - minutes boundary (59s -> just now, 60s -> 1 minute ago) (0.041916ms)
+✔ formatRelative - minutes plural (0.530917ms)
+✔ formatRelative - hours boundary (0.094333ms)
+✔ formatRelative - hours plural (0.057459ms)
+✔ formatRelative - days boundary (0.049584ms)
+✔ formatRelative - days plural (0.043583ms)
+✔ formatRelative - absolute UTC date (45d with specified epoch) (0.080125ms)
+✔ formatRelative - absolute UTC date padding test (0.09875ms)
+ℹ tests 40
+ℹ suites 0
+ℹ pass 40
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 463.752916
+```
+
+---
+
+### Remaining Limitations
+- None. Slice S7 has been fully implemented, integrated, and verified against all global constraints and requested test cases without introducing external dependencies or modifying unrelated codebase sections.

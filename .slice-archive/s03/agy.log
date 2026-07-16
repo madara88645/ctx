@@ -1,0 +1,45 @@
+I will start by viewing the project plan at `/Users/mehmetozel/agy-sandbox/ctx-cli/plan.md` to get full context on the requirements and the implementation.
+I will list the files in `/Users/mehmetozel/agy-sandbox/ctx-cli` to understand the directory structure and current files.
+I will list the contents of the `src` and `test` directories.
+I will list the contents of the `test` directory to check existing tests.
+I will run the existing test suite using the specified command to make sure the base project tests are passing.
+I will write `/Users/mehmetozel/agy-sandbox/ctx-cli/src/fingerprint.mjs` containing the `snapshotDir` implementation.
+I will create `/Users/mehmetozel/agy-sandbox/ctx-cli/src/fingerprint.mjs` without artifact metadata.
+I will create `/Users/mehmetozel/agy-sandbox/ctx-cli/test/fingerprint.test.mjs` containing the tests for `snapshotDir`.
+I will now execute the validation command to verify that all tests pass.
+I have successfully implemented and verified the requested directory fingerprinting functionality (Slice S3).
+
+### Changed Files:
+- [src/fingerprint.mjs](file:///Users/mehmetozel/agy-sandbox/ctx-cli/src/fingerprint.mjs) (Created: exported `snapshotDir` function)
+- [test/fingerprint.test.mjs](file:///Users/mehmetozel/agy-sandbox/ctx-cli/test/fingerprint.test.mjs) (Created: unit tests for walks, ignores, symbolic link exclusion, and 5000-file cap truncation)
+
+### Validation Command Output:
+```
+✔ CLI Help - no args exits 0 and contains ctx save <note> (26.632709ms)
+✔ CLI Help - bogus command exits 1 and contains help (21.631208ms)
+✔ fingerprint - snapshotDir walks files and filters ignores (3.576583ms)
+✔ fingerprint - empty temp dir (0.297333ms)
+✔ fingerprint - skip symbolic links entirely (0.528375ms)
+✔ fingerprint - truncate at 5000 files (457.681791ms)
+✔ formatRelative - just now (30s and 0s) (0.68775ms)
+✔ formatRelative - negative delta (future) (0.080125ms)
+✔ formatRelative - minutes boundary (59s -> just now, 60s -> 1 minute ago) (0.046291ms)
+✔ formatRelative - minutes plural (0.431959ms)
+✔ formatRelative - hours boundary (0.058875ms)
+✔ formatRelative - hours plural (0.040708ms)
+✔ formatRelative - days boundary (0.03975ms)
+✔ formatRelative - days plural (0.034ms)
+✔ formatRelative - absolute UTC date (45d with specified epoch) (0.070625ms)
+✔ formatRelative - absolute UTC date padding test (0.0765ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 501.967542
+```
+
+### Remaining Limitations:
+- The implementation resolves file sizes and modification times synchronously using Node.js filesystem APIs. When handling extremely large directories, synchronous walk operations will block the main loop until completion, though this is minimized by the 5,000-file limit.

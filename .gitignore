@@ -1,0 +1,12 @@
+# This project ships zero runtime dependencies; nothing should ever appear here.
+node_modules/
+
+# OS / editor cruft
+.DS_Store
+
+# Local agy/Understudy run exhaust from the top-level build.
+# The per-slice evidence lives under .slice-archive/ and the curated
+# write-up lives in docs/ — these loose copies stay out of the repo.
+/agy.log
+/.agy-viewer-run.json
+/.agy-prompt.md

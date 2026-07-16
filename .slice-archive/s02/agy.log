@@ -1,0 +1,49 @@
+### Changes
+
+The following files have been created and modified for **Slice S2 (timefmt)**:
+
+1. **Created** [src/timefmt.mjs](file:///Users/mehmetozel/agy-sandbox/ctx-cli/src/timefmt.mjs) exporting the pure relative-time formatter function [formatRelative](file:///Users/mehmetozel/agy-sandbox/ctx-cli/src/timefmt.mjs#L8).
+2. **Created** [test/timefmt.test.mjs](file:///Users/mehmetozel/agy-sandbox/ctx-cli/test/timefmt.test.mjs) with comprehensive unit tests checking edge cases, boundary transitions, singular/plural rules, negative durations, and UTC dates.
+3. **Modified** [package.json](file:///Users/mehmetozel/agy-sandbox/ctx-cli/package.json) to change the `scripts.test` command to `node --test` (to avoid directory-argument issues on Node 24).
+
+---
+
+### Validation Output
+
+Running the validation command:
+
+```bash
+cd /Users/mehmetozel/agy-sandbox/ctx-cli && node --test
+```
+
+Output:
+```
+✔ CLI Help - no args exits 0 and contains ctx save <note> (22.5725ms)
+✔ CLI Help - bogus command exits 1 and contains help (23.458459ms)
+✔ formatRelative - just now (30s and 0s) (0.370875ms)
+✔ formatRelative - negative delta (future) (0.100416ms)
+✔ formatRelative - minutes boundary (59s -> just now, 60s -> 1 minute ago) (0.052792ms)
+✔ formatRelative - minutes plural (0.4935ms)
+✔ formatRelative - hours boundary (0.063ms)
+✔ formatRelative - hours plural (0.039584ms)
+✔ formatRelative - days boundary (0.0365ms)
+✔ formatRelative - days plural (0.0315ms)
+✔ formatRelative - absolute UTC date (45d with specified epoch) (0.081292ms)
+✔ formatRelative - absolute UTC date padding test (0.081666ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 85.743291
+```
+
+All tests passed successfully.
+
+---
+
+### Remaining Limitations
+
+- None. The formatter meets all specification requirements.

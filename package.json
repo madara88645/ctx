@@ -1,0 +1,14 @@
+{
+  "name": "ctx-cli",
+  "version": "1.0.0",
+  "type": "module",
+  "bin": {
+    "ctx": "bin/ctx.mjs"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

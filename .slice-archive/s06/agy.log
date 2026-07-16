@@ -1,0 +1,50 @@
+### Changed Files
+- [src/git.mjs](file:///Users/mehmetozel/agy-sandbox/ctx-cli/src/git.mjs)
+- [test/git.test.mjs](file:///Users/mehmetozel/agy-sandbox/ctx-cli/test/git.test.mjs)
+
+### Validation Output
+Running `node --test` in `/Users/mehmetozel/agy-sandbox/ctx-cli` produced the following passing test suite:
+```
+✔ CLI Help - no args exits 0 and contains ctx save <note> (22.6715ms)
+✔ CLI Help - bogus command exits 1 and contains help (19.793209ms)
+✔ fingerprint - snapshotDir walks files and filters ignores (2.669208ms)
+✔ fingerprint - empty temp dir (0.260666ms)
+✔ fingerprint - skip symbolic links entirely (0.55525ms)
+✔ fingerprint - truncate at 5000 files (406.150167ms)
+✔ fingerprint - diffSnapshots empty -> some (0.158083ms)
+✔ fingerprint - diffSnapshots some -> empty (0.052083ms)
+✔ fingerprint - diffSnapshots modified (0.046459ms)
+✔ fingerprint - diffSnapshots mixed case with >= 2 entries per category (0.048667ms)
+✔ fingerprint - diffSnapshots null and undefined (0.056416ms)
+✔ gitInfo - typeof gitInfo is function (0.326417ms)
+✔ gitInfo - on a fresh temp dir (not a git repo) returns null (14.828125ms)
+✔ gitInfo - on a path that does not exist returns null (1.582209ms)
+✔ gitInfo - returns without throwing when given "/" (6.80525ms)
+✔ storePath - matches CTX_HOME/store.json when CTX_HOME is set (0.573417ms)
+✔ storePath - falls back to homedir/.ctx/store.json when CTX_HOME is not set (0.070584ms)
+✔ loadStore - with no file returns default structure (0.944917ms)
+✔ saveStore - saves data correctly and loadStore retrieves it (0.56325ms)
+✔ loadStore - with corrupt JSON returns default structure (0.331834ms)
+✔ loadStore - with non-object JSON returns default structure (0.679ms)
+✔ formatRelative - just now (30s and 0s) (0.365ms)
+✔ formatRelative - negative delta (future) (0.05525ms)
+✔ formatRelative - minutes boundary (59s -> just now, 60s -> 1 minute ago) (0.07925ms)
+✔ formatRelative - minutes plural (0.402084ms)
+✔ formatRelative - hours boundary (0.051166ms)
+✔ formatRelative - hours plural (0.039458ms)
+✔ formatRelative - days boundary (0.039625ms)
+✔ formatRelative - days plural (0.033375ms)
+✔ formatRelative - absolute UTC date (45d with specified epoch) (0.075ms)
+✔ formatRelative - absolute UTC date padding test (0.237083ms)
+ℹ tests 31
+ℹ suites 0
+ℹ pass 31
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 449.946667
+```
+
+### Remaining Limitations
+- **Verification on actual git repos**: In line with sandbox constraints, tests only exercise non-git or invalid repository paths where `gitInfo` correctly returns `null`. Verification of git repository outputs (i.e. returning a valid object with `{ branch, statusShort }`) relies on the caller executing the probe inside a valid git repository at user runtime.
