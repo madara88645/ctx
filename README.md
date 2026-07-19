@@ -51,6 +51,8 @@ npm install -g @madara88645/ctx
 ctx save "fixing the login redirect"
 ```
 
+> **Why the `@madara88645/` prefix?** The name is scoped, so a bare `npx ctx` won't resolve — always use `@madara88645/ctx`. Prefer typing `ctx`? Add a shell alias: `alias ctx='npx @madara88645/ctx'`.
+
 ### `ctx save <note>`
 
 ```
