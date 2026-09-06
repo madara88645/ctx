@@ -1,6 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+/** Upper bound on the number of files recorded in a single snapshot. */
+export const FILE_CAP = 5000;
+
 /**
  * Generates a fingerprint snapshot of the specified directory.
  * Walks the directory recursively, skipping symbolic links, .DS_Store files,
@@ -69,7 +72,7 @@ export function snapshotDir(rootAbs) {
         // Ensure always using POSIX-style "/" separators
         const posixRelPath = relPath.split(path.sep).join('/');
 
-        if (filesList.length >= 5000) {
+        if (filesList.length >= FILE_CAP) {
           truncated = true;
           return;
         }
