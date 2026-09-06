@@ -10,22 +10,23 @@ const helpText = `Usage:
 const args = process.argv.slice(2);
 const command = args[0];
 
+function report(result) {
+  // Failures belong on stderr so a caller can pipe the useful output.
+  (result.ok ? console.log : console.error)(result.text);
+  process.exitCode = result.ok ? 0 : 1;
+}
+
 if (!command || command === 'help') {
   console.log(helpText);
   process.exit(0);
 } else if (command === 'save') {
-  const result = cmdSave(process.cwd(), args.slice(1));
-  console.log(result.text);
-  process.exitCode = result.ok ? 0 : 1;
+  report(cmdSave(process.cwd(), args.slice(1)));
 } else if (command === 'resume') {
-  const result = cmdResume(process.cwd());
-  console.log(result.text);
-  process.exitCode = result.ok ? 0 : 1;
+  report(cmdResume(process.cwd()));
 } else if (command === 'list') {
-  const result = cmdList();
-  console.log(result.text);
-  process.exitCode = result.ok ? 0 : 1;
+  report(cmdList());
 } else {
-  console.log(helpText);
+  console.error(`Unknown command: ${command}`);
+  console.error(helpText);
   process.exit(1);
 }
