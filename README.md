@@ -92,7 +92,9 @@ export CTX_HOME="/path/to/store-dir"
 
 `ctx` builds a *footprint* of a directory from each file's size and modification time, skipping
 noisy directories (`node_modules`, `.git`, `dist`, `build`, `__pycache__`) and `.DS_Store`.
-`resume` re-fingerprints the directory and diffs it against the saved snapshot. Git context is
+`resume` re-fingerprints the directory and diffs it against the saved snapshot. A snapshot
+records at most 5000 files, and paths it cannot read are skipped; when either happens, `save`
+and `resume` say so rather than quietly reporting a partial answer. Git context is
 best-effort: if `git` is present it records the branch and short status, and if anything fails
 it simply records nothing. All state is one pretty-printed JSON file; there is no background
 process and no network access, ever.
