@@ -6,13 +6,17 @@ import path from 'node:path';
  * Walks the directory recursively, skipping symbolic links, .DS_Store files,
  * and ignored directories (node_modules, .git, dist, build, __pycache__).
  *
+ * Paths that cannot be read (permissions, or removed mid-walk) are skipped and
+ * counted in `skipped` rather than aborting the snapshot.
+ *
  * @param {string} rootAbs Absolute path to the directory to snapshot.
- * @returns {{ files: Record<string, string>, truncated: boolean }}
+ * @returns {{ files: Record<string, string>, truncated: boolean, skipped: number }}
  */
 export function snapshotDir(rootAbs) {
   const resolvedRoot = path.resolve(rootAbs);
   const filesList = [];
   let truncated = false;
+  let skipped = 0;
 
   function walk(currentDirAbs) {
     if (truncated) return;
@@ -21,7 +25,8 @@ export function snapshotDir(rootAbs) {
     try {
       entries = fs.readdirSync(currentDirAbs, { withFileTypes: true });
     } catch (err) {
-      throw err;
+      skipped += 1;
+      return;
     }
 
     // Sort entries alphabetically to ensure deterministic traversal order.
@@ -36,7 +41,8 @@ export function snapshotDir(rootAbs) {
       try {
         stat = fs.lstatSync(entryAbs);
       } catch (err) {
-        throw err;
+        skipped += 1;
+        continue;
       }
 
       if (stat.isSymbolicLink()) {
@@ -88,7 +94,8 @@ export function snapshotDir(rootAbs) {
 
   return {
     files,
-    truncated
+    truncated,
+    skipped
   };
 }
 

@@ -48,7 +48,7 @@ test('fingerprint - empty temp dir', () => {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "ctx-test-"));
   try {
     const result = snapshotDir(tempDir);
-    assert.deepStrictEqual(result, { files: {}, truncated: false });
+    assert.deepStrictEqual(result, { files: {}, truncated: false, skipped: 0 });
   } finally {
     fs.rmSync(tempDir, { recursive: true, force: true });
   }
@@ -82,6 +82,35 @@ test('fingerprint - truncate at 5000 files', () => {
     assert.strictEqual(result.truncated, true);
     assert.strictEqual(Object.keys(result.files).length, 5000);
   } finally {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
+});
+
+test('fingerprint - unreadable root is skipped, not thrown', () => {
+  const missing = path.join(os.tmpdir(), 'ctx-test-does-not-exist-' + process.pid);
+  const result = snapshotDir(missing);
+  assert.deepStrictEqual(result, { files: {}, truncated: false, skipped: 1 });
+});
+
+test('fingerprint - unreadable subdirectory is skipped, siblings still tracked', (t) => {
+  if (process.platform === 'win32' || (process.getuid && process.getuid() === 0)) {
+    // chmod is a no-op on Windows and root ignores it, so the error never fires.
+    t.skip('needs a POSIX non-root user');
+    return;
+  }
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "ctx-test-"));
+  const locked = path.join(tempDir, 'locked');
+  try {
+    fs.writeFileSync(path.join(tempDir, 'a.txt'), 'hello');
+    fs.mkdirSync(locked);
+    fs.writeFileSync(path.join(locked, 'b.txt'), 'hidden');
+    fs.chmodSync(locked, 0o000);
+
+    const result = snapshotDir(tempDir);
+    assert.deepStrictEqual(Object.keys(result.files), ['a.txt']);
+    assert.strictEqual(result.skipped, 1);
+  } finally {
+    fs.chmodSync(locked, 0o700);
     fs.rmSync(tempDir, { recursive: true, force: true });
   }
 });
