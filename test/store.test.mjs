@@ -214,3 +214,44 @@ test('saveStore - leaves no temp file and writes an owner-only store', () => {
     fs.rmSync(tempDir, { recursive: true, force: true });
   }
 });
+
+
+test('repeated corruption preserves every recovery file', () => {
+  const previous = process.env.CTX_HOME;
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ctx-recovery-'));
+  process.env.CTX_HOME = dir;
+  try {
+    const p = storePath();
+    for (const content of ['first broken{', 'second broken{', 'third broken{']) {
+      fs.writeFileSync(p, content);
+      loadStore();
+    }
+    assert.strictEqual(fs.readFileSync(p + '.corrupt', 'utf8'), 'first broken{');
+    assert.strictEqual(fs.readFileSync(p + '.corrupt.1', 'utf8'), 'second broken{');
+    assert.strictEqual(fs.readFileSync(p + '.corrupt.2', 'utf8'), 'third broken{');
+  } finally {
+    if (previous === undefined) delete process.env.CTX_HOME;
+    else process.env.CTX_HOME = previous;
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('failed recovery aborts without overwriting the original store', (t) => {
+  const previous = process.env.CTX_HOME;
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ctx-recovery-'));
+  process.env.CTX_HOME = dir;
+  try {
+    const p = storePath();
+    fs.writeFileSync(p, 'recover me{');
+    t.mock.method(fs, 'copyFileSync', () => {
+      throw Object.assign(new Error('permission denied'), { code: 'EACCES' });
+    });
+    assert.throws(() => { const store = loadStore(); saveStore(store); }, /refusing/);
+    assert.strictEqual(fs.readFileSync(p, 'utf8'), 'recover me{');
+  } finally {
+    t.mock.restoreAll();
+    if (previous === undefined) delete process.env.CTX_HOME;
+    else process.env.CTX_HOME = previous;
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});

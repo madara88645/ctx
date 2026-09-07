@@ -45,12 +45,19 @@ export function loadStore() {
  * silently overwrite whatever snapshots it still holds.
  */
 function quarantine(p) {
-  const backup = `${p}.corrupt`;
-  try {
-    fs.renameSync(p, backup);
+  // Exclusive copies cannot replace an earlier recovery file, even if another
+  // process creates the same backup name between attempts.
+  for (let suffix = 0; ; suffix += 1) {
+    const backup = `${p}.corrupt${suffix ? `.${suffix}` : ''}`;
+    try {
+      fs.copyFileSync(p, backup, fs.constants.COPYFILE_EXCL);
+    } catch (err) {
+      if (err.code === 'EEXIST') continue;
+      throw new Error(`ctx: could not preserve ${p}; refusing to start a fresh store.`, { cause: err });
+    }
+    fs.unlinkSync(p);
     console.error(`ctx: could not read ${p}; kept it as ${backup} and started a fresh store.`);
-  } catch (err) {
-    console.error(`ctx: could not read ${p}; the next save will overwrite it.`);
+    return;
   }
 }
 
