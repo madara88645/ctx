@@ -66,7 +66,7 @@ test('CLI End-to-End Workflow', () => {
     assert.strictEqual(listResult.status, 0);
     assert.match(listResult.stdout, /testing e2e/);
 
-    // run ["save"] (no note words) → status 1, stdout contains "Note required."
+    // run ["save"] (no note words) → status 1, stderr contains "Note required."
     const emptySaveResult = spawnSync(
       process.execPath,
       [binPath, 'save'],
@@ -77,7 +77,7 @@ test('CLI End-to-End Workflow', () => {
       }
     );
     assert.strictEqual(emptySaveResult.status, 1);
-    assert.match(emptySaveResult.stdout, /Note required\./);
+    assert.match(emptySaveResult.stderr, /Note required\./);
 
   } finally {
     // Restore environment

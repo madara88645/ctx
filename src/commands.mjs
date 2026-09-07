@@ -1,4 +1,4 @@
-import { snapshotDir, diffSnapshots } from './fingerprint.mjs';
+import { snapshotDir, diffSnapshots, FILE_CAP } from './fingerprint.mjs';
 import { loadStore, saveStore } from './store.mjs';
 import { gitInfo } from './git.mjs';
 import { formatRelative } from './timefmt.mjs';
@@ -34,9 +34,16 @@ export function cmdSave(cwdAbs, noteWords, now = Date.now()) {
   saveStore(store);
 
   const numFiles = Object.keys(snap.files).length;
+  const parts = [`${numFiles} ${numFiles === 1 ? "file" : "files"} tracked`];
+  if (snap.truncated) {
+    parts.push(`stopped at the ${FILE_CAP}-file cap, so this snapshot is incomplete`);
+  }
+  if (snap.skipped > 0) {
+    parts.push(`${snap.skipped} unreadable ${snap.skipped === 1 ? "path" : "paths"} skipped`);
+  }
   return {
     ok: true,
-    text: `Saved snapshot for ${cwdAbs} (${numFiles} files tracked).`
+    text: `Saved snapshot for ${cwdAbs} (${parts.join("; ")}).`
   };
 }
 
@@ -95,6 +102,17 @@ export function cmdResume(cwdAbs, now = Date.now()) {
     if (hasRemoved) {
       lines.push(formatCategory("Removed", diff.removed));
     }
+  }
+
+  if (entry.truncated || snap.truncated) {
+    lines.push(
+      `Heads up: this directory is over the ${FILE_CAP}-file snapshot cap, so the list above may be incomplete.`
+    );
+  }
+  if (snap.skipped > 0) {
+    lines.push(
+      `Heads up: ${snap.skipped} unreadable ${snap.skipped === 1 ? "path was" : "paths were"} skipped, so the list above may be incomplete.`
+    );
   }
 
   return {

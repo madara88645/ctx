@@ -146,3 +146,112 @@ test('loadStore - with non-object JSON returns default structure', () => {
     fs.rmSync(tempDir, { recursive: true, force: true });
   }
 });
+
+test('storePath - falls back to homedir/.ctx when CTX_HOME is set but empty', () => {
+  const originalCtxHome = process.env.CTX_HOME;
+  process.env.CTX_HOME = '';
+
+  try {
+    const expected = path.join(os.homedir(), '.ctx', 'store.json');
+    assert.strictEqual(storePath(), expected);
+  } finally {
+    if (originalCtxHome === undefined) {
+      delete process.env.CTX_HOME;
+    } else {
+      process.env.CTX_HOME = originalCtxHome;
+    }
+  }
+});
+
+test('loadStore - keeps an unreadable store as store.json.corrupt', () => {
+  const originalCtxHome = process.env.CTX_HOME;
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ctx-test-'));
+  process.env.CTX_HOME = tempDir;
+
+  try {
+    const filePath = path.join(tempDir, 'store.json');
+    fs.writeFileSync(filePath, 'not json{');
+
+    assert.deepStrictEqual(loadStore(), { version: 1, projects: {} });
+    assert.strictEqual(fs.existsSync(filePath), false);
+    assert.strictEqual(fs.readFileSync(filePath + '.corrupt', 'utf8'), 'not json{');
+
+    // A later save must not disturb the quarantined copy.
+    saveStore({ version: 1, projects: { '/tmp/p': { savedAt: 1, note: 'n' } } });
+    assert.strictEqual(fs.readFileSync(filePath + '.corrupt', 'utf8'), 'not json{');
+    assert.deepStrictEqual(loadStore().projects['/tmp/p'], { savedAt: 1, note: 'n' });
+  } finally {
+    if (originalCtxHome === undefined) {
+      delete process.env.CTX_HOME;
+    } else {
+      process.env.CTX_HOME = originalCtxHome;
+    }
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
+});
+
+test('saveStore - leaves no temp file and writes an owner-only store', () => {
+  const originalCtxHome = process.env.CTX_HOME;
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ctx-test-'));
+  process.env.CTX_HOME = path.join(tempDir, 'home');
+
+  try {
+    saveStore({ version: 1, projects: {} });
+
+    const dir = path.join(tempDir, 'home');
+    assert.deepStrictEqual(fs.readdirSync(dir), ['store.json']);
+
+    if (process.platform !== 'win32') {
+      const mode = fs.statSync(path.join(dir, 'store.json')).mode & 0o777;
+      assert.strictEqual(mode, 0o600);
+    }
+  } finally {
+    if (originalCtxHome === undefined) {
+      delete process.env.CTX_HOME;
+    } else {
+      process.env.CTX_HOME = originalCtxHome;
+    }
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
+});
+
+
+test('repeated corruption preserves every recovery file', () => {
+  const previous = process.env.CTX_HOME;
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ctx-recovery-'));
+  process.env.CTX_HOME = dir;
+  try {
+    const p = storePath();
+    for (const content of ['first broken{', 'second broken{', 'third broken{']) {
+      fs.writeFileSync(p, content);
+      loadStore();
+    }
+    assert.strictEqual(fs.readFileSync(p + '.corrupt', 'utf8'), 'first broken{');
+    assert.strictEqual(fs.readFileSync(p + '.corrupt.1', 'utf8'), 'second broken{');
+    assert.strictEqual(fs.readFileSync(p + '.corrupt.2', 'utf8'), 'third broken{');
+  } finally {
+    if (previous === undefined) delete process.env.CTX_HOME;
+    else process.env.CTX_HOME = previous;
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('failed recovery aborts without overwriting the original store', (t) => {
+  const previous = process.env.CTX_HOME;
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ctx-recovery-'));
+  process.env.CTX_HOME = dir;
+  try {
+    const p = storePath();
+    fs.writeFileSync(p, 'recover me{');
+    t.mock.method(fs, 'copyFileSync', () => {
+      throw Object.assign(new Error('permission denied'), { code: 'EACCES' });
+    });
+    assert.throws(() => { const store = loadStore(); saveStore(store); }, /refusing/);
+    assert.strictEqual(fs.readFileSync(p, 'utf8'), 'recover me{');
+  } finally {
+    t.mock.restoreAll();
+    if (previous === undefined) delete process.env.CTX_HOME;
+    else process.env.CTX_HOME = previous;
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});

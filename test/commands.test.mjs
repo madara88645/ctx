@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import { cmdSave, cmdResume, cmdList } from '../src/commands.mjs';
+import { FILE_CAP } from '../src/fingerprint.mjs';
 import { loadStore } from '../src/store.mjs';
 
 const NOW = 1_752_570_000_000;
@@ -198,5 +199,44 @@ test('cmdList 70-char note -> 60 chars + …', () => {
     const expectedNoteTrunc = 'a'.repeat(60) + '…';
     const expectedLine = `just now  ${tempProjDir}  —  ${expectedNoteTrunc}`;
     assert.strictEqual(res.text, expectedLine);
+  });
+});
+
+test('cmdSave with a single file -> "1 file tracked" (not "1 files")', () => {
+  withTempEnv((tempCtxHome, tempProjDir) => {
+    fs.rmSync(path.join(tempProjDir, 'file2.txt'));
+    const res = cmdSave(tempProjDir, ['solo'], NOW);
+    assert.strictEqual(res.text, `Saved snapshot for ${tempProjDir} (1 file tracked).`);
+  });
+});
+
+test('cmdSave reports paths it could not read', () => {
+  withTempEnv((tempCtxHome, tempProjDir) => {
+    const missing = path.join(tempProjDir, 'gone');
+    const res = cmdSave(missing, ['vanished dir'], NOW);
+    assert.strictEqual(
+      res.text,
+      `Saved snapshot for ${missing} (0 files tracked; 1 unreadable path skipped).`
+    );
+  });
+});
+
+test('a snapshot over the file cap says so on save and on resume', () => {
+  withTempEnv((tempCtxHome, tempProjDir) => {
+    for (let i = 0; i < FILE_CAP + 1; i++) {
+      fs.writeFileSync(path.join(tempProjDir, `f${String(i).padStart(5, '0')}.txt`), 'x');
+    }
+
+    const saved = cmdSave(tempProjDir, ['big project'], NOW);
+    assert.strictEqual(
+      saved.text,
+      `Saved snapshot for ${tempProjDir} (${FILE_CAP} files tracked; stopped at the ${FILE_CAP}-file cap, so this snapshot is incomplete).`
+    );
+
+    const resumed = cmdResume(tempProjDir, NOW);
+    assert.match(
+      resumed.text,
+      new RegExp(`Heads up: this directory is over the ${FILE_CAP}-file snapshot cap`)
+    );
   });
 });

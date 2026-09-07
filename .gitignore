@@ -4,6 +4,9 @@ node_modules/
 # OS / editor cruft
 .DS_Store
 
+# `npm pack` output
+*.tgz
+
 # Local agy/Understudy run exhaust from the top-level build.
 # The per-slice evidence lives under .slice-archive/ and the curated
 # write-up lives in docs/ — these loose copies stay out of the repo.
